@@ -7,26 +7,26 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# 👇 Opt into Node 24 (fix warning)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   newman-run:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repo
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"   # safe now, will still work
 
-      # Step 3: Install Newman
       - name: Install Newman
         run: npm install -g newman
 
-      # Step 4: Run Postman Collection
       - name: Run Postman Tests (GraphQL API)
         run: |
           newman run "Dummy Graphql Api automation Postman.postman_collection.json" \
@@ -34,7 +34,6 @@ jobs:
           --reporters cli,html \
           --reporter-html-export newman-report.html
 
-      # Step 5: Upload Test Report
       - name: Upload Newman Report
         uses: actions/upload-artifact@v4
         with:
