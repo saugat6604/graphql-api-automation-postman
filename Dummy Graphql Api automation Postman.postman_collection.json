@@ -1,0 +1,741 @@
+{
+  "info": {
+    "_postman_id": "19ec8651-c890-462d-b613-efac3ead5802",
+    "name": "Dummy Graphql Api automation Postman",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "18457677"
+  },
+  "item": [
+    {
+      "name": "Login Api",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();\r",
+              "\r",
+              "const items = json.data.getParentCategoriesWithChildren.items;\r",
+              "\r",
+              "//\r",
+              "// 1. STATUS CODE\r",
+              "//\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 2. RESPONSE TIME\r",
+              "//\r",
+              "pm.test(\"Response time is under 1500ms\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(1500);\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 3. EXACT COUNT CHECK (12 CATEGORIES)\r",
+              "//\r",
+              "pm.test(\"Should return exactly 12 categories\", function () {\r",
+              "    pm.expect(items.length).to.equal(12);\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 4. EXACT ORDER CHECK (BASED ON YOUR RESPONSE)\r",
+              "//\r",
+              "const expectedOrder = [\r",
+              "    \"Sleep\",\r",
+              "    \"8D\",\r",
+              "    \"Focus\",\r",
+              "    \"Meditation\",\r",
+              "    \"Relaxation\",\r",
+              "    \"ASMR\",\r",
+              "    \"Healing Voices\",\r",
+              "    \"Instruments\",\r",
+              "    \"Frequencies\",\r",
+              "    \"Ambient/Lofi\",\r",
+              "    \"Sleep Hypnosis\",\r",
+              "    \"Tinnitus\"\r",
+              "];\r",
+              "\r",
+              "pm.test(\"Category order should match API response order\", function () {\r",
+              "    const actualOrder = items.map(i => i.categoryName);\r",
+              "    pm.expect(actualOrder).to.deep.equal(expectedOrder);\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 5. NO DUPLICATES CHECK\r",
+              "//\r",
+              "pm.test(\"No duplicate category names\", function () {\r",
+              "    const names = items.map(i => i.categoryName);\r",
+              "    const unique = new Set(names);\r",
+              "    pm.expect(unique.size).to.equal(names.length);\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 6. ID VALIDATION\r",
+              "//\r",
+              "pm.test(\"Each category must have valid id\", function () {\r",
+              "    items.forEach(item => {\r",
+              "        pm.expect(item.id).to.exist;\r",
+              "        pm.expect(item.id).to.be.a(\"string\");\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 7. ICON VALIDATION (FIXED - icons CAN BE NULL)\r",
+              "//\r",
+              "pm.test(\"Icons validation (allow null)\", function () {\r",
+              "    items.forEach(item => {\r",
+              "\r",
+              "        if (item.icons !== null) {\r",
+              "            pm.expect(item.icons.dark.active).to.not.be.empty;\r",
+              "            pm.expect(item.icons.dark.inactive).to.not.be.empty;\r",
+              "        } else {\r",
+              "            // allow null icons but ensure category still valid\r",
+              "            pm.expect(item.categoryName).to.exist;\r",
+              "        }\r",
+              "\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 8. SAFE SCHEMA VALIDATION (UPDATED)\r",
+              "//\r",
+              "const schema = {\r",
+              "  type: \"object\",\r",
+              "  properties: {\r",
+              "    data: {\r",
+              "      type: \"object\",\r",
+              "      properties: {\r",
+              "        getParentCategoriesWithChildren: {\r",
+              "          type: \"object\",\r",
+              "          properties: {\r",
+              "            items: {\r",
+              "              type: \"array\",\r",
+              "              items: {\r",
+              "                type: \"object\",\r",
+              "                properties: {\r",
+              "                  categoryName: { type: \"string\" },\r",
+              "                  id: { type: \"string\" },\r",
+              "\r",
+              "                  icons: {\r",
+              "                    type: [\"object\", \"null\"],\r",
+              "                    properties: {\r",
+              "                      dark: {\r",
+              "                        type: \"object\",\r",
+              "                        properties: {\r",
+              "                          active: { type: \"string\" },\r",
+              "                          inactive: { type: \"string\" }\r",
+              "                        }\r",
+              "                      }\r",
+              "                    }\r",
+              "                  }\r",
+              "                }\r",
+              "              }\r",
+              "            }\r",
+              "          }\r",
+              "        }\r",
+              "      }\r",
+              "    }\r",
+              "  }\r",
+              "};\r",
+              "\r",
+              "pm.test(\"Schema is valid\", function () {\r",
+              "    pm.response.to.have.jsonSchema(schema);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "dv-device-id",
+            "value": "567",
+            "type": "text"
+          },
+          {
+            "key": "dv-device-timezone",
+            "value": "Asia/Kathmandu",
+            "type": "text"
+          },
+          {
+            "key": "dv-device-type",
+            "value": "web",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query Login($loginInputDto: LoginInputDto!) {\r\n  login(loginInputDto: $loginInputDto) {\r\n    access_token\r\n  }\r\n}",
+            "variables": "{\r\n  \"loginInputDto\": {\r\n    \"username\": \"artist@terma.com\",\r\n    \"password\": \"Artist@123\"\r\n  }\r\n}"
+          }
+        },
+        "url": {
+          "raw": "https://api.musicflow-demo.com/graphql",
+          "protocol": "https",
+          "host": [
+            "api",
+            "musicflow-demo",
+            "com"
+          ],
+          "path": [
+            "graphql"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Me",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "gv-device-id",
+            "value": "{{gv_device_id}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-timezone",
+            "value": "{{gv_device_timezone}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-type",
+            "value": "{{gv_device_type}}",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "bearer {{access_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query Me {\r\n  me {\r\n  email  \r\n  }\r\n}",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": "https://api.musicflow-demo.com/graphql",
+          "protocol": "https",
+          "host": [
+            "api",
+            "musicflow-demo",
+            "com"
+          ],
+          "path": [
+            "graphql"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Fetch Navbars",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();\r",
+              "\r",
+              "const items = json.data.getParentCategoriesWithChildren.items;\r",
+              "\r",
+              "//\r",
+              "// 1. STATUS CODE\r",
+              "//\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 2. RESPONSE TIME\r",
+              "//\r",
+              "pm.test(\"Response time is under 1500ms\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(1500);\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 3. EXACT COUNT CHECK (12 CATEGORIES)\r",
+              "//\r",
+              "pm.test(\"Should return exactly 12 categories\", function () {\r",
+              "    pm.expect(items.length).to.equal(12);\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 4. EXACT ORDER CHECK (BASED ON YOUR RESPONSE)\r",
+              "//\r",
+              "const expectedOrder = [\r",
+              "    \"Sleep\",\r",
+              "    \"8D\",\r",
+              "    \"Focus\",\r",
+              "    \"Meditation\",\r",
+              "    \"Relaxation\",\r",
+              "    \"ASMR\",\r",
+              "    \"Healing Voices\",\r",
+              "    \"Instruments\",\r",
+              "    \"Frequencies\",\r",
+              "    \"Ambient/Lofi\",\r",
+              "    \"Sleep Hypnosis\",\r",
+              "    \"Tinnitus\"\r",
+              "];\r",
+              "\r",
+              "pm.test(\"Category order should match API response order\", function () {\r",
+              "    const actualOrder = items.map(i => i.categoryName);\r",
+              "    pm.expect(actualOrder).to.deep.equal(expectedOrder);\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 5. NO DUPLICATES CHECK\r",
+              "//\r",
+              "pm.test(\"No duplicate category names\", function () {\r",
+              "    const names = items.map(i => i.categoryName);\r",
+              "    const unique = new Set(names);\r",
+              "    pm.expect(unique.size).to.equal(names.length);\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 6. ID VALIDATION\r",
+              "//\r",
+              "pm.test(\"Each category must have valid id\", function () {\r",
+              "    items.forEach(item => {\r",
+              "        pm.expect(item.id).to.exist;\r",
+              "        pm.expect(item.id).to.be.a(\"string\");\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 7. ICON VALIDATION (FIXED - icons CAN BE NULL)\r",
+              "//\r",
+              "pm.test(\"Icons validation (allow null)\", function () {\r",
+              "    items.forEach(item => {\r",
+              "\r",
+              "        if (item.icons !== null) {\r",
+              "            pm.expect(item.icons.dark.active).to.not.be.empty;\r",
+              "            pm.expect(item.icons.dark.inactive).to.not.be.empty;\r",
+              "        } else {\r",
+              "            // allow null icons but ensure category still valid\r",
+              "            pm.expect(item.categoryName).to.exist;\r",
+              "        }\r",
+              "\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "//\r",
+              "// 8. SAFE SCHEMA VALIDATION (UPDATED)\r",
+              "//\r",
+              "const schema = {\r",
+              "  type: \"object\",\r",
+              "  properties: {\r",
+              "    data: {\r",
+              "      type: \"object\",\r",
+              "      properties: {\r",
+              "        getParentCategoriesWithChildren: {\r",
+              "          type: \"object\",\r",
+              "          properties: {\r",
+              "            items: {\r",
+              "              type: \"array\",\r",
+              "              items: {\r",
+              "                type: \"object\",\r",
+              "                properties: {\r",
+              "                  categoryName: { type: \"string\" },\r",
+              "                  id: { type: \"string\" },\r",
+              "\r",
+              "                  icons: {\r",
+              "                    type: [\"object\", \"null\"],\r",
+              "                    properties: {\r",
+              "                      dark: {\r",
+              "                        type: \"object\",\r",
+              "                        properties: {\r",
+              "                          active: { type: \"string\" },\r",
+              "                          inactive: { type: \"string\" }\r",
+              "                        }\r",
+              "                      }\r",
+              "                    }\r",
+              "                  }\r",
+              "                }\r",
+              "              }\r",
+              "            }\r",
+              "          }\r",
+              "        }\r",
+              "      }\r",
+              "    }\r",
+              "  }\r",
+              "};\r",
+              "\r",
+              "pm.test(\"Schema is valid\", function () {\r",
+              "    pm.response.to.have.jsonSchema(schema);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-id",
+            "value": "{{gv_device_id}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-timezone",
+            "value": "{{gv_device_timezone}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-type",
+            "value": "{{gv_device_type}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query GetParentCategoriesWithChildren($filters: ParentCategoryFilters!) {\r\n  getParentCategoriesWithChildren(filters: $filters) {\r\n    items {\r\n      categoryName\r\n      id\r\n      icons {\r\n        dark {\r\n          active\r\n          inactive\r\n        }\r\n       \r\n      }\r\n    }\r\n  }\r\n}",
+            "variables": "{\r\n  \"filters\": {\r\n    \"page\": 1,\r\n    \"limit\": 20,\r\n    \"section\": \"NAVIGATION\",\r\n    \"publishStatus\": true\r\n  }\r\n}"
+          }
+        },
+        "url": {
+          "raw": "https://api.musicflow-demo.com/graphql",
+          "protocol": "https",
+          "host": [
+            "api",
+            "musicflow-demo",
+            "com"
+          ],
+          "path": [
+            "graphql"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GetTrAacks",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "const response = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response should not contain GraphQL errors\", function () {\r",
+              "    pm.expect(response.errors).to.be.undefined;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response time should be below 3000ms\", function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain getTracks object\", function () {\r",
+              "    pm.expect(response.data).to.have.property(\"getTracks\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Tracks array should exist\", function () {\r",
+              "    pm.expect(response.data.getTracks).to.have.property(\"tracks\");\r",
+              "    pm.expect(response.data.getTracks.tracks).to.be.an(\"array\");\r",
+              "});\r",
+              "\r",
+              "const tracks = response.data.getTracks.tracks;\r",
+              "\r",
+              "pm.test(\"Tracks array should not be empty\", function () {\r",
+              "    pm.expect(tracks.length).to.be.greaterThan(0);\r",
+              "});\r",
+              "\r",
+              "tracks.forEach((track, index) => {\r",
+              "\r",
+              "    pm.test(`Track ${index + 1} should have title`, function () {\r",
+              "        pm.expect(track.title).to.not.be.null;\r",
+              "        pm.expect(track.title).to.not.equal(\"\");\r",
+              "        pm.expect(track.title).to.be.a(\"string\");\r",
+              "    });\r",
+              "\r",
+              "    pm.test(`Track ${index + 1} should have storageKeys`, function () {\r",
+              "        pm.expect(track.storageKeys).to.be.an(\"object\");\r",
+              "    });\r",
+              "\r",
+              "    pm.test(`Track ${index + 1} should have azure object`, function () {\r",
+              "        pm.expect(track.storageKeys.azure).to.be.an(\"object\");\r",
+              "    });\r",
+              "\r",
+              "    pm.test(`Track ${index + 1} should have freeTrackUrl`, function () {\r",
+              "        pm.expect(track.storageKeys.azure.freeTrackUrl).to.be.a(\"string\");\r",
+              "        pm.expect(track.storageKeys.azure.freeTrackUrl).to.not.equal(\"\");\r",
+              "    });\r",
+              "\r",
+              "    pm.test(`Track ${index + 1} should have valid freeTrackUrl`, function () {\r",
+              "        pm.expect(\r",
+              "            track.storageKeys.azure.freeTrackUrl\r",
+              "        ).to.match(/^https?:\\/\\/.+/);\r",
+              "    });\r",
+              "\r",
+              "    pm.test(`Track ${index + 1} should have image url`, function () {\r",
+              "        pm.expect(track.storageKeys.azure.image).to.be.a(\"string\");\r",
+              "        pm.expect(track.storageKeys.azure.image).to.not.equal(\"\");\r",
+              "    });\r",
+              "\r",
+              "    pm.test(`Track ${index + 1} should have valid image url`, function () {\r",
+              "        pm.expect(\r",
+              "            track.storageKeys.azure.image\r",
+              "        ).to.match(/^https?:\\/\\/.+/);\r",
+              "    });\r",
+              "\r",
+              "});\r",
+              "\r",
+              "console.log(\"Total Tracks:\", tracks.length);\r",
+              "console.log(\"Tracks Response:\", tracks);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-id",
+            "value": "{{gv_device_id}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-timezone",
+            "value": "{{gv_device_timezone}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-timezone",
+            "value": "{{gv_device_timezone}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query GetTracks($searchAndFilterArgs: TracksFilterArgs!) {\r\n  getTracks(searchAndFilterArgs: $searchAndFilterArgs) {\r\n    tracks {\r\n      title\r\n      storageKeys {\r\n        azure {\r\n          freeTrackUrl\r\n          image\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+            "variables": "{\r\n  \"searchAndFilterArgs\": {\r\n    \"limit\": 5,\r\n    \"page\": 1\r\n  }\r\n}"
+          }
+        },
+        "url": {
+          "raw": "https://api.musicflow-demo.com/graphql",
+          "protocol": "https",
+          "host": [
+            "api",
+            "musicflow-demo",
+            "com"
+          ],
+          "path": [
+            "graphql"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Subscription",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const timestamp = Date.now();\r",
+              "const random = Math.floor(Math.random() * 100000);\r",
+              "\r",
+              "const transactionId = `GPA.${timestamp}.${random}`;\r",
+              "const originalTransactionId = `GPA.ORIG.${timestamp}.${random}`;\r",
+              "\r",
+              "pm.environment.set(\"transaction_id\", transactionId);\r",
+              "pm.environment.set(\"original_transaction_id\", originalTransactionId);\r",
+              "\r",
+              "console.log(\"transaction_id:\", transactionId);\r",
+              "console.log(\"original_transaction_id:\", originalTransactionId);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"api_version\": \"1.0\",\r\n  \"event\": {\r\n    \"aliases\": [\r\n      \"a2e42f1d-a9b3-4e5a-a33b-5d14a31b5cdd\"\r\n    ],\r\n    \"app_id\": \"app53612719d9\",\r\n    \"app_user_id\": \"a2e42f1d-a9b3-4e5a-a33b-5d14a31b5cdd\",\r\n    \"commission_percentage\": 0.1327,\r\n   \"country_code\": \"NP\",\r\n    \"currency\": \"USD\",\r\n    \"entitlement_id\": null,\r\n    \"entitlement_ids\": [\r\n      \"premium\"\r\n    ],\r\n\r\n    \"environment\": \"SANDBOX\",\r\n    \"event_timestamp_ms\": 1775091255425,\r\n    \"expiration_at_ms\": 1775696051000,\r\n    \"id\": \"12383647-A98A-483E-8B1E-4FE191DB56D3\",\r\n    \"is_family_share\": false,\r\n    \"is_trial_conversion\": false,\r\n    \"metadata\": null,\r\n    \"offer_code\": null,\r\n    \"original_app_user_id\": \"a2e42f1d-a9b3-4e5a-a33b-5d14a31b5cdd\",\r\n\"original_transaction_id\": \"{{original_transaction_id}}\",\r\n    \"period_type\": \"TRIAL\",\r\n    \"presented_offering_id\": null,\r\n    \"price\": 4.99,\r\n    \"price_in_purchased_currency\": 4.99,\r\n    \"product_id\": \"com.goodvibes.monthly_android:p1m\",\r\n    \"purchased_at_ms\": 1775091255425,\r\n    \"store\": \"PLAY_STORE\",\r\n    \"subscriber_attributes\": {\r\n      \"$email\": {\r\n        \"updated_at_ms\": 1759992162655,\r\n        \"value\": \"ppr1.180610.011.g950fxxucdvg4sm-g950f@goodvibes.com\"\r\n      },\r\n      \"$mixpanelDistinctId\": {\r\n        \"updated_at_ms\": 1759992597127,\r\n        \"value\": \"e29b7905-3b15-4807-8cc6-d0919550f349\"\r\n      },\r\n      \"Country\": {\r\n        \"updated_at_ms\": 1759992597127,\r\n        \"value\": \"Nepal\"\r\n      },\r\n      \"device_id\": {\r\n        \"updated_at_ms\": 1759992162664,\r\n        \"value\": \"PPR1.180610.011.G950FXXUCDVG4SM-G950F\"\r\n      },\r\n      \"gv_user_id\": {\r\n        \"updated_at_ms\": 1759992162665,\r\n        \"value\": \"8740a3af-f90f-486c-8083-4aaaadebfa26\"\r\n      },\r\n      \"subscriptionPlan\": {\r\n        \"updated_at_ms\": 1759992597127,\r\n        \"value\": \"Subscription Renewed\"\r\n      },\r\n      \"userType\": {\r\n        \"updated_at_ms\": 1759992162664,\r\n        \"value\": \"guest\"\r\n      }\r\n    },\r\n    \"takehome_percentage\": 0.85,\r\n    \"tax_percentage\": 0.115,\r\n\"transaction_id\": \"{{transaction_id}}\",\r\n    \"type\": \"INITIAL_PURCHASE\"\r\n  }\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.subscriptions-demo.io/graphql",
+          "protocol": "https",
+          "host": [
+            "api",
+            "subscriptions-demo",
+            "io"
+          ],
+          "path": [
+            "graphql"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Me Api check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "const response = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response should contain me object\", function () {\r",
+              "    pm.expect(response.data).to.have.property(\"me\");\r",
+              "});\r",
+              "\r",
+              "const me = response.data.me;\r",
+              "\r",
+              "pm.test(\"Email should exist\", function () {\r",
+              "    pm.expect(me.email).to.be.a(\"string\");\r",
+              "    pm.expect(me.email).to.not.equal(\"\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Android subscription should be trial\", function () {\r",
+              "    pm.expect(me.subscriptionAndroid).to.eql(\"trial\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"iOS subscription should be trial\", function () {\r",
+              "    pm.expect(me.subscriptionIos).to.eql(\"trial\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Android expiry date should exist\", function () {\r",
+              "    pm.expect(me.subscriptionAndroidExpiryDate).to.not.be.null;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"iOS expiry date should exist\", function () {\r",
+              "    pm.expect(me.subscriptionIosExpiryDate).to.not.be.null;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Grace date should exist\", function () {\r",
+              "    pm.expect(me.subscriptionGraceDate).to.not.be.null;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Android expiry date should be valid date\", function () {\r",
+              "\r",
+              "    const date = new Date(me.subscriptionAndroidExpiryDate);\r",
+              "\r",
+              "    pm.expect(date.toString()).to.not.equal(\"Invalid Date\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"iOS expiry date should be valid date\", function () {\r",
+              "\r",
+              "    const date = new Date(me.subscriptionIosExpiryDate);\r",
+              "\r",
+              "    pm.expect(date.toString()).to.not.equal(\"Invalid Date\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Grace date should be valid date\", function () {\r",
+              "\r",
+              "    const date = new Date(me.subscriptionGraceDate);\r",
+              "\r",
+              "    pm.expect(date.toString()).to.not.equal(\"Invalid Date\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Grace date should be after Android expiry date\", function () {\r",
+              "\r",
+              "    const graceDate = new Date(me.subscriptionGraceDate);\r",
+              "    const expiryDate = new Date(me.subscriptionAndroidExpiryDate);\r",
+              "\r",
+              "    pm.expect(graceDate.getTime()).to.be.greaterThan(\r",
+              "        expiryDate.getTime()\r",
+              "    );\r",
+              "});\r",
+              "\r",
+              "console.log(\"Me API Response:\", me);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "bearer {{access_token}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-id",
+            "value": "{{gv_device_id}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-timezone",
+            "value": "{{gv_device_timezone}}",
+            "type": "text"
+          },
+          {
+            "key": "gv-device-type",
+            "value": "{{gv_device_type}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query Me {\r\n  me {\r\n    email\r\n    subscriptionGraceDate\r\n    subscriptionAndroidExpiryDate\r\n    subscriptionAndroid\r\n    subscriptionIos\r\n    subscriptionIosExpiryDate\r\n  }\r\n}",
+            "variables": ""
+          }
+        },
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    }
+  ]
+}
